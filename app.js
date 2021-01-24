@@ -1,4 +1,7 @@
+const fs = require('fs');
 const inquirer = require('inquirer');
+const generatePage = require('./src/page-template.js');
+
 const promptUser = () => {
   return inquirer.prompt([
     {
@@ -18,8 +21,8 @@ const promptUser = () => {
       type: 'input',
       name: 'github',
       message: 'Enter your GitHub Username',
-      validate: nameInput => {
-        if (nameInput) {
+      validate: githubNameInput => {
+        if (githubNameInput) {
           return true;
         } else {
           console.log('Please enter your GitHub Username!');
@@ -37,13 +40,7 @@ const promptUser = () => {
       type: 'input',
       name: 'about',
       message: 'Provide some information about yourself:',
-      when: ({ confirmAbout }) => {
-        if (confirmAbout) {
-          return true;
-        } else {
-          return false;
-        }
-      }
+      when: ({ confirmAbout }) => confirmAbout
     }
   ]);
 };
@@ -65,8 +62,8 @@ Add a New Project
       type: 'input',
       name: 'name',
       message: 'What is the name of your project?',
-      validate: nameInput => {
-        if (nameInput) {
+      validate: projectNameInput => {
+        if (projectNameInput) {
           return true;
         } else {
           console.log('Please enter your project!');
@@ -78,8 +75,8 @@ Add a New Project
       type: 'input',
       name: 'description',
       message: 'Provide a description of the project (Required)',
-      validate: nameInput => {
-        if (nameInput) {
+      validate: descriptionInput => {
+        if (descriptionInput) {
           return true;
         } else {
           console.log('Please enter your description of the project!');
@@ -97,8 +94,8 @@ Add a New Project
       type: 'input',
       name: 'link',
       message: 'Enter the GitHub link to your project. (Required)',
-      validate: nameInput => {
-        if (nameInput) {
+      validate: linkInput => {
+        if (linkInput) {
           return true;
         } else {
           console.log('Please enter your GitHub link!');
@@ -132,19 +129,26 @@ promptUser()
   .then(promptProject)
   // .then(projectAnswers => console.log(projectAnswers))
   .then(portfolioData => {
-    console.log(portfolioData);
+    //console.log(portfolioData);
+    const pageHTML = generatePage(portfolioData);
+
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+
+      console.log('Portfolio complete! Check out index.html to see the output!');
+    });
   });
   
 
 
 
 
-const fs = require('fs');
-const generatePage = require('./src/page-template.js');
+
+
 
 //console.log(inquirer);
 
-//const pageHTML = generatePage(name, github);
+
 // const profileDataArgs = process.argv.slice(2);
 // const [name, github] = profileDataArgs;
 
@@ -170,8 +174,3 @@ const generatePage = require('./src/page-template.js');
 //console.log(name, github);
 //console.log(generatePage(name, github))
 
-// fs.writeFile('./index.html', pageHTML, err => {
-//   if (err) throw new Error(err);
-
-//   console.log('Portfolio complete! Check out index.html to see the output!');
-// });
